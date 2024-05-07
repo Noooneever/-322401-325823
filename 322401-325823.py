@@ -65,6 +65,13 @@ class Transformacje:
             u = dx[2]
             return n, e, u 
     def fl_2000(self, f, l):
+        def s2r(stopnie, minuty, sekundy):
+            """
+            Funkcja przelicza wartosc podaną w stopniach na warto
+            """
+            kat_stopnie = stopnie + minuty/60 + sekundy/3600
+            radiany = kat_stopnie * pi/180
+            return(radiany)
         b2 = (self.a ** 2) * (1 - self.e2)
         ep2 = (self.a ** 2 - b2) / b2
         l_0 = 0
@@ -100,6 +107,13 @@ class Transformacje:
         y_2000 = y_gk * m + n * 1000000 + 500000
         return(x_2000, y_2000)
     def fl_1992(self, f, l):
+        def s2r(stopnie, minuty, sekundy):
+            """
+            Funkcja przelicza wartosc podaną w stopniach na warto
+            """
+            kat_stopnie = stopnie + minuty/60 + sekundy/3600
+            radiany = kat_stopnie * pi/180
+            return(radiany)
         b2 = (self.a ** 2) * (1 - self.e2)
         ep2 = (self.a ** 2 - b2) / b2
         l_0 = 0
