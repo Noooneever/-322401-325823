@@ -1,19 +1,18 @@
+import sys
 import numpy as np
 from math import sin, cos, tan, pi
+
 class Transformacje:
     
-    def __init__(self,  model = 'wgs84'):
+    def __init__(self, model='wgs84'):
         """
         Parametry elipsoid:
             a - duża półoś elipsoidy - promień równikowy
             b - mała półoś elipsoidy - promień południkowy
             flat - spłaszczenie
             ecc2 - mimośród^2
-        + WGS84: https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84
-        + Inne powierzchnie odniesienia: https://en.wikibooks.org/wiki/PROJ.4#Spheroid
-        + Parametry planet: https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
         """
-        if  model == 'wgs84':
+        if model == 'wgs84':
             self.a = 6378137.0
             self.b = 6356752.31424518
         elif model == 'grs80':
@@ -148,3 +147,25 @@ class Transformacje:
         x_1992 = x_gk * m - 5300000
         y_1992 = y_gk * m + 500000
         return(x_1992, y_1992)
+
+def main():
+    if len(sys.argv) < 4:
+        print("Użycie: python skrypt.py f l model")
+        print("gdzie:")
+        print("f - {}")
+        print("l - długość geograficzna w stopniach")
+        print("model - model elipsoidy (wgs84, grs80, Krasowski)")
+        return
+
+    f = Transformacje.s2r(float(sys.argv[1]), 0, 0)
+    l = Transformacje.s2r(float(sys.argv[2]), 0, 0)
+    model = sys.argv[3]
+
+    trans = Transformacje(model)
+    x, y = trans.fl_2000(f, l)
+    print(f"Współrzędne w układzie 2000: x = {x}, y = {y}")
+    x, y = trans.fl_1992(f, l)
+    print(f"Współrzędne w układzie 1992: x = {x}, y = {y}")
+
+if __name__ == "__main__":
+    main()
