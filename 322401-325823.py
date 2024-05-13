@@ -26,13 +26,13 @@ class Transformacje:
         self.e = np.sqrt(2 * self.flat - self.flat ** 2) 
         self.e2 = (2 * self.flat - self.flat ** 2)
         # PODAWANIE JEDNOSTKI
-    jednostka = sys.argv[2]
-    if jednostka == "dec_degree" or jednostka == "dms" or jednostka == "no_unit":
+    unit = sys.argv[2]
+    if unit == "dec_degree" or unit == "dms" or unit == "no_unit":
             pass
     else:
             raise NotImplementedError(f"Nieprawidłowa jednostka")
             
-    def s2r(stopnie, minuty, sekundy):
+    def s2r(self, stopnie, minuty, sekundy):
                 """
                 Funkcja przelicza wartość podana w stopniach, minutach, sekundach na wartość w radianach.
                 
@@ -47,16 +47,6 @@ class Transformacje:
                 kat_stopnie = stopnie + minuty/60 + sekundy/3600
                 radiany = kat_stopnie * pi/180
                 return(radiany)
-    def r2s(self, x):
-            sig = ' '
-            if x<0:
-                sig = '-'
-                x = abs(x)
-            x = x * 180 / pi
-            d = int(x)
-            m = int(60 * (x - d))
-            s = (x - d - m/60) * 3600
-            return(f'{sig}{d:3d}{chr(176)}{abs(m):2d}\'{abs(s):7.5f}\"')
         
     def xyz2flh(self, x, y, z):
             """
@@ -83,7 +73,8 @@ class Transformacje:
                 f = np.arctan(z / (p * (1 - (self.e2 * (N / (N + h))))))
                 if np.abs(fs - f) < (0.000001 / 206265):
                     break
-                return f, l, h
+            return f, l, h
+        
     def flh2xyz(self, f, l, h):
             """
             Funkcja służy do transformacji współrzędnych współrzędnych geodezyjnych f, l  
@@ -195,20 +186,7 @@ class Transformacje:
         """
         b2 = (self.a ** 2) * (1 - self.e2)
         ep2 = (self.a ** 2 - b2) / b2
-        l_0 = 0
-        n = 0
-        if l > self.s2r(13, 30, 0) and l < self.s2r(16, 30, 0):
-                l_0 += self.s2r(15, 0, 0)
-                n += 5
-        elif l > self.s2r(16, 30, 0) and l < self.s2r(19, 30, 0):
-                l_0 += self.s2r(18, 0, 0)
-                n += 6
-        elif l > self.s2r(19, 30, 0) and l < self.s2r(22, 30, 0):
-                l_0 += self.s2r(21, 0, 0)
-                n += 7
-        elif l > self.s2r(22, 30, 0) and l < self.s2r(25, 30, 0):
-                l_0 += self.s2r(24, 0, 0)
-                n += 8
+        l_0 = self.s2r(19, 0, 0)
         dlambda = l - l_0
         t = tan(f)
         eta2 = ep2 * (cos(f) ** 2)
@@ -255,6 +233,7 @@ if __name__ == "__main__":
                 f, l, h = geo.xyz2flh(X[i], Y[i], Z[i])
                 wyniki_1.append([f, l, h])
             wyniki_1 = np.array(wyniki_1)
+            
         elif metoda == "flh2xyz" or metoda == "fl_2000" or metoda == "fl_1992":
             wsp_flh = []
             for linia in dane:
@@ -275,60 +254,65 @@ if __name__ == "__main__":
                 pass
         
     if metoda == "xyz2flh":
-            with open('raport_xyz2flh.txt', 'w') as p:
-                unit = sys.argv[2]
+        with open('raport_xyz2flh.txt', 'w') as p:
+            unit = sys.argv[2]
             if unit == "dec_degree":
                 p.write('      f        |       l        |  h [m]     \n')
                 for f, l, h in wyniki_1:
-                        f = degrees(f)
-                        l = degrees(l)
-                        p.write(f'{f:.12f}  {l:.12f}  {h:.3f} \n')
+                    f = degrees(f)
+                    l = degrees(l)
+                    p.write(f'{f:.12f}  {l:.12f}  {h:.3f} \n')
             elif unit == "dms":
                 p.write('        f         |       l         |  h [m]     \n')
                 for f, l, h in wyniki_1:
-                    f = geo.r2s(f)
-                    l = geo.r2s(l)
+                    f = geo.rad2dms(f)
+                    l = geo.rad2dms(l)
                     p.write(f'{f} {l}   {h:.3f} \n')
                 
     elif metoda == "flh2xyz":
-                with open('raport_flh2xyz.txt', 'w') as p:
-                    p.write('    X [m]   |    Y [m]   |    Z [m]    \n')
-                    for X, Y, Z in wyniki2:
-                        p.write(f'{X:.3f} {Y:.3f} {Z:.3f} \n')
+        with open('raport_flh2xyz.txt', 'w') as p:
+            p.write('    X [m]   |    Y [m]   |    Z [m]    \n')
+            for X, Y, Z in wyniki2:
+                p.write(f'{X:.3f} {Y:.3f} {Z:.3f} \n')
                           
     elif metoda == "fl_2000":
-                wyniki_3 = []
-                for f, l, h in wsp_flh:
-                    x_2000, y_2000 = geo.fl_2000(f, l)
-                    wyniki_3.append([x_2000, y_2000])
-                    wyniki_3 = np.array(wyniki_3)
-                    with open('raport_fl_2000.txt', 'w') as r:
-                        r.write('       X [m]     |       Y[m]    \n')
-                        for x, y in wyniki_3:
-                            r.write(f'{x:.9f} {y:.9f} \n')
+        wyniki_3 = []
+        for f, l, h in wsp_flh:
+            x_2000, y_2000 = geo.fl_2000(f*pi/180, l*pi/180)
+            wyniki_3.append([x_2000, y_2000])
+        wyniki_3 = np.array(wyniki_3)
+        with open('raport_fl_2000.txt', 'w') as r:
+            r.write('       X [m]     |       Y[m]    \n')
+            for x, y in wyniki_3:
+                r.write(f'{x:.9f} {y:.9f} \n')
             
     elif metoda == "fl_1992":
-                wyniki_4 = []
-                for f, l, h in wsp_flh:
-                    x_1992, y_1992 = geo.fl_1992(f, l)
-                    wyniki_4.append([x_1992, y_1992])
-                    wyniki_4 = np.array(wyniki_4)
-                    with open('raport_fl2xygk1992.txt', 'w') as r:
-                        r.write('      X [m]     |      Y [m]    \n')
-                        for x, y in wyniki_4:
-                            r.write(f'{x:.2f} {y:.2f} \n')
+        wyniki_4 = []
+        for f, l, h in wsp_flh:
+            x_1992, y_1992 = geo.fl_1992(f*pi/180, l*pi/180)
+            wyniki_4.append([x_1992, y_1992])
+        wyniki_4 = np.array(wyniki_4)
+        with open('raport_fl_1992.txt', 'w') as r:
+            r.write('      X [m]     |      Y [m]    \n')
+            for x, y in wyniki_4:
+                r.write(f'{x:.2f} {y:.2f} \n')
+                            
     elif metoda == "XYZ2neu":
-                wyniki_5 = []
-                X2 = float(input("Podaj współrzędną X punktu początkowego wektora przestrzennego: "))
-                Y2 = float(input("Podaj współrzędne Y punktu początkowego wektora przestrzennego: "))
-                Z2 =float(input("Podaj współrzędne Z punktu początkowego wektora przestrzennego: "))
-                for f, l, h in wyniki_1:
-                    n, e, u = geo.XYZ2neu(f, l, h, X2, Y2, Z2)
+        wyniki_5 = []
+        X2 = float(input("Podaj współrzędną X punktu początkowego wektora przestrzennego: "))
+        Y2 = float(input("Podaj współrzędne Y punktu początkowego wektora przestrzennego: "))
+        Z2 = float(input("Podaj współrzędne Z punktu początkowego wektora przestrzennego: "))
+        for f, l, h in wyniki_1:
+            dx = geo.XYZ2neu(f, l, h, X2, Y2, Z2)
+            wyniki_5.append(dx)
                     
-                    wyniki_5 = np.concatenate((wyniki_5, [n, e, u]))
-                    with open('raport_XYZ2neu.txt', 'w') as f:
-                        f.write('  N [m]  |   E [m]  |   U [m] \n')
-                        for dx in wyniki_5:
-                            f.write(f'{n:^10.4f} {e:^10.4f} {u:^10.4f} \n')
+        wyniki_5 = np.array(wyniki_5)
+        with open('raport_XYZ2neu.txt', 'w') as f:
+            f.write('  N [m]  |   E [m]  |   U [m] \n')
+            for dx in wyniki_5:
+                n = dx[0]
+                e = dx[1]
+                u = dx[2]
+                f.write(f'{n:^10.4f} {e:^10.4f} {u:^10.4f} \n')
               
 print("Program został wykonany poprawnie")
