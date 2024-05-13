@@ -1,5 +1,6 @@
 import numpy as np
-from math import sin, cos, tan, pi
+from math import sin, cos, tan, pi, degrees
+import sys
 class Transformacje:
     
     def __init__(self,  model = 'wgs84'):
@@ -9,9 +10,6 @@ class Transformacje:
             b - mała półoś elipsoidy - promień południkowy
             flat - spłaszczenie
             ecc2 - mimośród^2
-        + WGS84: https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84
-        + Inne powierzchnie odniesienia: https://en.wikibooks.org/wiki/PROJ.4#Spheroid
-        + Parametry planet: https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
         """
         if  model == 'wgs84':
             self.a = 6378137.0
@@ -27,23 +25,12 @@ class Transformacje:
         self.flat = (self.a - self.b) / self.a
         self.e = np.sqrt(2 * self.flat - self.flat ** 2) 
         self.e2 = (2 * self.flat - self.flat ** 2)
-        
-        
-    def s2r(stopnie, minuty, sekundy):
-        """
-        Funkcja przelicza wartość podana w stopniach, minutach, sekundach na wartość w radianach.
-        
-        INPUT:
-            stopnie  [int] : liczba stopni
-            minuty   [int] : liczba minut
-            sekundy  [float] : liczba sekund
-        
-        OUTPUT:
-            radiany :[float] : wartość podana w radianach
-        """
-        kat_stopnie = stopnie + minuty/60 + sekundy/3600
-        radiany = kat_stopnie * pi/180
-        return(radiany)
+        # PODAWANIE JEDNOSTKI
+    jednostka = sys.argv[2]
+    if jednostka == "dec_degree" or jednostka == "dms" or jednostka == "no_unit":
+            pass
+    else:
+            raise NotImplementedError(f"Nieprawidłowa jednostka")
         
     def xyz2flh(self, x, y, z):
             """
@@ -128,6 +115,17 @@ class Transformacje:
             y_2000 [float] : współrzędna y układu współrzędnych 2000 (metry)
         """
         def s2r(stopnie, minuty, sekundy):
+            """
+            Funkcja przelicza wartość podana w stopniach, minutach, sekundach na wartość w radianach.
+            
+            INPUT:
+                stopnie  [int] : liczba stopni
+                minuty   [int] : liczba minut
+                sekundy  [float] : liczba sekund
+            
+            OUTPUT:
+                radiany :[float] : wartość podana w radianach
+            """
             kat_stopnie = stopnie + minuty/60 + sekundy/3600
             radiany = kat_stopnie * pi/180
             return(radiany)
@@ -180,6 +178,17 @@ class Transformacje:
         """
         
         def s2r(stopnie, minuty, sekundy):
+            """
+            Funkcja przelicza wartość podana w stopniach, minutach, sekundach na wartość w radianach.
+            
+            INPUT:
+                stopnie  [int] : liczba stopni
+                minuty   [int] : liczba minut
+                sekundy  [float] : liczba sekund
+            
+            OUTPUT:
+                radiany :[float] : wartość podana w radianach
+            """
             kat_stopnie = stopnie + minuty/60 + sekundy/3600
             radiany = kat_stopnie * pi/180
             return(radiany)
@@ -217,3 +226,114 @@ class Transformacje:
         x_1992 = x_gk * m - 5300000
         y_1992 = y_gk * m + 500000
         return(x_1992, y_1992)
+# wywołanie       
+if __name__ == "__main__":
+    # utworzenie obiektu
+    geo = Transformacje(model = sys.argv[3])
+    # dane XYZ geocentryczne
+    plik = sys.argv[4]
+    metoda = sys.argv[1]
+    
+    # Mamy współrzędne XYZ, chcemy PLH
+    with open(plik, 'r') as t:
+        text = t.readlines()
+        dane = text[4:]
+        wsp = []
+        if metoda == "xyz2flh" or metoda == "XYZ2neu":
+            for linia in dane:
+                elem = linia.replace(",", " ")
+                x, y, z = elem.split()
+                wsp.append([float(x), float(y), float(z)])
+            wsp = np.array(wsp)
+            X = wsp[:,0]
+            Y = wsp[:,1]
+            Z = wsp[:,2]
+            wyniki_1 = []
+            for i in range(0, len(wsp)):
+                f, l, h = geo.xyz2flh(X[i], Y[i], Z[i])
+                wyniki_1.append([f, l, h])
+            wyniki_1 = np.array(wyniki_1)
+            
+        # Mamy współrzędne PLH, chcemy XYZ/chcemy skorzystać ze wsp do GK        
+        elif metoda == "flh2xyz" or metoda == "fl2xygk2000" or metoda == "fl2xygk1992":
+            wsp_flh = []
+            for linia in dane:
+                elem = linia.replace(",", " ")
+                f, l, h = elem.split()
+                wsp_flh.append([float(f), float(l), float(h)])
+            wsp_flh = np.array(wsp_flh)
+            f = wsp_flh[:,0]
+            l = wsp_flh[:,1]
+            h = wsp_flh[:,2]
+            if metoda == "flh2xyz":
+                wyniki2 = []
+                for i in range(0, len(wsp_flh)):
+                    X1, Y1, Z1 = geo.flh2xyz(f[i]*pi/180, l[i]*pi/180, h[i])
+                    wyniki2.append([X1, Y1, Z1])
+                wyniki2 = np.array(wyniki2)
+            else: # w tym momencie zostawiamy wsp by z nich skorzystać do GK
+                pass
+        
+    # gdy plik ze wsp zawiera wsp. XYZ
+    if metoda == "xyz2flh":
+        with open('raport_xyz2flh.txt', 'w') as p:
+            unit = sys.argv[2]
+            if unit == "dec_degree":
+                p.write('      f        |       l        |  h [m]     \n')
+                for f, l, h in wyniki_1:
+                        f = degrees(f)
+                        l = degrees(l)
+                        p.write(f'{f:.12f}  {l:.12f}  {h:.3f} \n')
+            elif unit == "dms":
+                p.write('        f         |       l         |  h [m]     \n')
+                for f, l, h in wyniki_1:
+                    f = geo.rad2dms(f)
+                    l = geo.rad2dms(l)
+                    p.write(f'{f} {l}   {h:.3f} \n')
+                
+    # gdy plik ze wsp zawiera wsp. PLH
+    elif metoda == "flh2xyz":
+        with open('raport_flh2xyz.txt', 'w') as p:
+            p.write('    X [m]   |    Y [m]   |    Z [m]    \n')
+            for X, Y, Z in wyniki2:
+                p.write(f'{X:.3f} {Y:.3f} {Z:.3f} \n')
+                
+    # Mamy współrzędne PLH, chcemy mieć XY 2000            
+    elif metoda == "fl2xygk2000":
+        wyniki_3 = []
+        for f, l, h in wsp_flh:
+            x_2000, y_2000 = geo.fl_2000(f, l)
+            wyniki_3.append([x_2000, y_2000])
+        wyniki_3 = np.array(wyniki_3)
+        with open('raport_fl2xygk2000.txt', 'w') as r:
+            r.write('       X [m]     |       Y[m]    \n')
+            for x, y in wyniki_3:
+                r.write(f'{x:.9f} {y:.9f} \n')
+            
+    elif metoda == "fl2xygk1992":
+        wyniki_4 = []
+        for f, l, h in wsp_flh:
+            x_1992, y_1992 = geo.fl_1992(f, l)
+            wyniki_4.append([x_1992, y_1992])
+        wyniki_4 = np.array(wyniki_4)
+        with open('raport_fl2xygk1992.txt', 'w') as r:
+            r.write('      X [m]     |      Y [m]    \n')
+            for x, y in wyniki_4:
+                r.write(f'{x:.2f} {y:.2f} \n')
+         
+    # Mamy współrzędne PLH, chcemy mieć wektor NEU
+    elif metoda == "XYZ2neu":
+        wyniki_5 = []
+        for f, l, h in wyniki_1:
+            dX = geo.neup(f, l, h, X2, Y2, Z2)
+            wyniki_5.append(dX)
+        wyniki_5 = np.array(wyniki_5)
+        with open('raport_XYZ2neu.txt', 'w') as k:
+            k.write('  N [m]  |   E [m]  |   U [m] \n')
+            for dx in wyniki_5:
+                n = dx[0]
+                e = dx[1]
+                u = dx[2]
+                k.write(f'{n:^10.4f} {e:^10.4f} {u:^10.4f} \n')
+              
+print("Program został wykonany poprawnie :)")
