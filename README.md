@@ -1,8 +1,10 @@
 
+
 INSTRUKCJA KORZYSTANIA Z PLIKU TRANSFORMACJE.PY  
 
 1. DO CZEGO SŁUŻY PROGRAM?  
-Program powstałw celu transformacji współrzedych podabych w poliku tekstowym dla wybranej z podanych elipsoid (WGS84, GRS80, elisoida Krasowskiego).  
+Program powstałw celu transformacji współrzedych podabych w pliku tekstowym (program przyjmuje 2 rodzaje plików, w których dane są przedstawione w postaci 
+współrzędnych geodezyjnych, albo ortokartezjańskich) dla wybranej z podanych elipsoid (WGS84, GRS80, elisoida Krasowskiego).  
 Możliwe transformacje: XYZ -> FLH ; FLH -> XYZ ; XYZ -> NEU ; FL -> PL2000 ; FL -> PL1992.   
 
 2. JAKIE SĄ WYMAGANIA, BY PROGRAM DZIAŁAŁ NA KOMPUTERZE?  
@@ -19,7 +21,7 @@ Gdzie:
 transformacja to: xyz2flh, flh2xyz, XYZ2neu, fl2xygk2000, fl2xygk1992  
 jednostka to: w przypadku zmiany z fl: dec_degree, dms   ;   w przypadku zaminy z XYZ: no_unit (domyślnie są metry)  
 Model_elipsoidy: wgs84, grs80, Krasowski  
-plik_ze_wspolrzednymi: nazwa pliku z jednostakami  
+plik_ze_wspolrzednymi: nazwa pliku ze współrzędnymi.
 
 5. PRZYKŁADOWE WYWOŁANIA PROGRAMU:  
 python transformacje.py xyz2flh dms grs84 wsp_xyz.txt  
@@ -38,5 +40,4 @@ Linie ze współrzędnymi są w następującej formie: X,Y,Z.
 
 7. BŁĘDY I NIETYPOWE ZACHOWANIA PROGRAMU:  
 Podczas pisania programu nie napotkaliśmy żadnych problemów.  
-MIŁEGO KORZYSTANIA Z PROGRAMU!  
-
+MIŁEGO KORZYSTANIA Z PROGRAMU! 
