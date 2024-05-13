@@ -40,4 +40,3 @@ Linie ze współrzędnymi są w następującej formie: X,Y,Z.
 
 7. BŁĘDY I NIETYPOWE ZACHOWANIA PROGRAMU:  
 Podczas pisania programu nie napotkaliśmy żadnych problemów.  
-MIŁEGO KORZYSTANIA Z PROGRAMU! 
