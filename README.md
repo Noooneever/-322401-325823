@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 INSTRUKCJA KORZYSTANIA Z PLIKU TRANSFORMACJE.PY
 
 1. DO CZEGO SŁUŻY PROGRAM?
@@ -22,14 +22,14 @@ Model_elipsoidy: wgs84, grs80, Krasowski
 plik_ze_wspolrzednymi: nazwa pliku z jednostakami
 
 5. PRZYKŁADOWE WYWOŁANIA PROGRAMU:
-python transformacje.py xyz2plh dms grs84 wsp_xyz.txt
-python transformacje.py plh2xyz dec_degree Krasowski wsp_plh.txt
-python transformacje.py xyz2neu no_unit grs80 wsp_xyz.txt
-python transformacje.py pl2xygk2000 dec_degree Krasowski4 wsp_plh.txt
-python transformacje.py pl2xygk1992 dec_degree grs80 wsp_plh.txt
+python transformacje.py xyz2flh dms grs84 wsp_xyz.txt
+python transformacje.py flh2xyz dec_degree Krasowski wsp_flh.txt
+python transformacje.py XYZ2neu no_unit grs80 wsp_xyz.txt
+python transformacje.py fl2xygk2000 dec_degree Krasowski4 wsp_flh.txt
+python transformacje.py fl2xygk1992 dec_degree grs80 wsp_flh.txt
 	
 Wprzypadku gdy komenda zostanie poprawnie napisana pojawi sie komunitak potwierdzający: 
-"Program został wykonany poprawnie :)".
+"Program został wykonany poprawnie".
 
 6. PRZYKŁADOWY PLIK ZE WSPÓŁRZĘDNYMI
 Program został napisany dla przykładowego plików ze współrzędnymi.
@@ -38,6 +38,5 @@ Linie ze współrzędnymi są w następującej formie: X,Y,Z.
 
 7. BŁĘDY I NIETYPOWE ZACHOWANIA PROGRAMU:
 Podczas pisania programu nie napotkaliśmy żadnych problemów.
-=======
 MIŁEGO KORZYSTANIA Z PROGRAMU! :)
->>>>>>> 5c5e833eb7a23153412e6e9825222dac69cd049b
+
