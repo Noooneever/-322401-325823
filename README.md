@@ -36,7 +36,10 @@ Wprzypadku gdy komenda zostanie poprawnie napisana pojawi sie komunitak potwierd
 6. PRZYKŁADOWY PLIK ZE WSPÓŁRZĘDNYMI  
 Program został napisany dla przykładowego plików ze współrzędnymi.  
 Program pozbywa się wstępu, dzieli poniższe linijki ze współrzędnymi na części oraz przypisuje do odpowiednich zmiennych.  
-Linie ze współrzędnymi są w następującej formie: X,Y,Z.  
+Linie ze współrzędnymi są w następującej formie dla:
+- transformacji xyz2flh,  XYZ2neu: X,Y,Z
+- transformacji flh2xyz: F,L,h
+- transformacji fl2xygk2000, fl2xygk1992: F,L
 
-7. BŁĘDY I NIETYPOWE ZACHOWANIA PROGRAMU:  
+8. BŁĘDY I NIETYPOWE ZACHOWANIA PROGRAMU:  
 Podczas pisania programu nie napotkaliśmy żadnych problemów.  
