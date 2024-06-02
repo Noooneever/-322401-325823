@@ -27,8 +27,8 @@ plik_ze_wspolrzednymi: nazwa pliku ze współrzędnymi.
 python transformacje.py xyz2flh dms grs84 wsp_xyz.txt  
 python transformacje.py flh2xyz dec_degree Krasowski wsp_flh.txt  
 python transformacje.py XYZ2neu no_unit grs80 wsp_xyz.txt  
-python transformacje.py fl2xygk2000 dec_degree Krasowski4 wsp_flh.txt  
-python transformacje.py fl2xygk1992 dec_degree grs80 wsp_flh.txt  
+python transformacje.py fl_2000 dec_degree Krasowski4 wsp_flh.txt  
+python transformacje.py fl_1992 dec_degree grs80 wsp_flh.txt  
 	
 Wprzypadku gdy komenda zostanie poprawnie napisana pojawi sie komunitak potwierdzający: 
 "Program został wykonany poprawnie".  
