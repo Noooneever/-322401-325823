@@ -42,4 +42,4 @@ Linie ze współrzędnymi są w następującej formie dla:
 - transformacji fl2xygk2000, fl2xygk1992: F,L
 
 8. BŁĘDY I NIETYPOWE ZACHOWANIA PROGRAMU:  
-Podczas pisania programu nie napotkaliśmy żadnych problemów.  
+Funkcje fl_2000 oraz fl_1992 nie zwracają poprawnych wyników dla modelu elipsoidy Krasowskiego
